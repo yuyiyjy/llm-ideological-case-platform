@@ -1,0 +1,96 @@
+# 环境变量与密钥
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+ENV/
+__pypackages__/
+build/
+dist/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.pyright/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# JavaScript 与前端构建
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+.vite/
+.next/
+.nuxt/
+.svelte-kit/
+frontend/dist/
+frontend/build/
+coverage/
+
+# 日志与运行时文件
+*.log
+logs/
+runtime/
+tmp/
+temp/
+uploads/
+backups/
+
+# 数据库与持久化数据
+*.db
+*.sqlite
+*.sqlite3
+postgres_data/
+maxkb_data/
+infra/data/
+infra/volumes/
+
+# Docker 本地覆盖配置
+docker-compose.override.yml
+compose.override.yml
+
+# IDE 与编辑器
+.idea/
+.vscode/
+*.code-workspace
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Office 临时文件
+~$*
+
+# 测试与工具缓存
+.cache/
+.tox/
+.nox/
+test-results/
+playwright-report/
+
+# 本地导出与临时产物
+outputs/
+exports/
+*.bak
+*.tmp
