@@ -131,6 +131,9 @@ FastAPI 业务后端
 5. Docker Volume、数据库文件、上传文件和备份文件不得提交；
 6. 发现密钥误提交时，应立即停用并更换密钥，不能只删除 Git 中的文件。
 
+各环境变量的具体用途、当前阶段建议值和自检方法见
+[环境变量说明](docs/environment-variables.md)。
+
 ## 九、协作方式
 
 稳定代码保存在 `main` 分支，日常开发使用短期任务分支，并通过 Pull Request 合并。详细规则见 [CONTRIBUTING.md](CONTRIBUTING.md)。
