@@ -25,6 +25,7 @@ PostgreSQL 17
 asyncpg
 HTTPX
 Pytest
+pytest-asyncio
 ```
 
 Python 版本范围和直接依赖的精确版本统一声明在 `pyproject.toml` 中。当前要求 Python `>=3.13,<3.14`。
@@ -151,3 +152,37 @@ dependencies.py  FastAPI 请求依赖入口
 - 4B03 不定义问答、生成、评价的接口路径、认证头或业务数据结构。
 
 HTTP 适配器目前不能执行真实业务调用。后续必须先确认 MaxKB 已发布应用的 API 契约，再为抽象接口、Mock 实现和 HTTP 实现同步增加业务语义方法及测试。
+
+## 运行测试
+
+测试依赖通过 `.[test]` 安装，其中 `pytest-asyncio` 使用严格模式管理异步测试和异步 fixture。
+
+默认运行全部不依赖外部服务的测试：
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest
+```
+
+默认测试使用完整的合成配置，不读取根目录 `.env` 的真实值，也不会连接 PostgreSQL 或请求 MaxKB。测试范围包括：
+
+- 配置加载、规范化和组合校验；
+- 应用生命周期、健康检查、Swagger UI 和 OpenAPI；
+- 404、参数校验和未知异常的统一安全响应；
+- 数据库管理器的延迟连接行为；
+- 请求会话的异常回滚和不自动提交约定；
+- MaxKB Mock/HTTP 模式选择、零请求构造和资源关闭；
+- MaxKB 不可达时非 AI 健康检查仍然可用。
+
+本地 Docker PostgreSQL 已启动并完成迁移后，可显式加入集成测试：
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest --run-integration
+```
+
+只运行 PostgreSQL 集成测试：
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest --run-integration -m integration
+```
+
+集成测试会读取本地 `.env`，执行真实 `SELECT 1`，并确认数据库记录的 Alembic 版本与代码迁移头一致。该测试仍不会调用真实 MaxKB。测试目录和安全约定见 `tests/README.md`。

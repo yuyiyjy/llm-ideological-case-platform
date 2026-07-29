@@ -22,8 +22,23 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
 ]
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "-ra",
+    "--strict-config",
+    "--strict-markers",
+]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+asyncio_default_test_loop_scope = "function"
+markers = [
+    "integration: 需要显式启用本地外部服务的集成测试",
+]
