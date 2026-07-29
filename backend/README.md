@@ -126,3 +126,28 @@ docker compose --env-file .env -f infra/compose.yaml stop postgres
 - 每个请求获得独立异步会话，写操作由业务服务显式提交；
 - Alembic 当前只有空基线迁移，不包含核心业务表；
 - PostgreSQL 业务数据库与 MaxKB 内部数据库完全独立。
+
+## MaxKB 适配层骨架
+
+MaxKB 集成代码统一位于 `app/integrations/maxkb/`：
+
+```text
+base.py          适配器抽象接口与运行模式
+mock.py          不产生网络请求的 Mock 实现
+http.py          持有私有 HTTPX 客户端的 HTTP 实现骨架
+factory.py       根据配置集中选择 Mock 或 HTTP 实现
+dependencies.py  FastAPI 请求依赖入口
+```
+
+应用工厂会把当前适配器保存到 `app.state.maxkb_adapter`，后续路由和业务服务通过统一依赖取得抽象接口，不直接读取 API Key，也不自行创建 HTTPX 客户端。应用退出时，生命周期会先关闭 MaxKB 适配器，再释放数据库连接池。
+
+当前边界如下：
+
+- `MAXKB_MOCK_ENABLED=true` 时只创建 Mock 适配器；
+- `MAXKB_MOCK_ENABLED=false` 时只构造 HTTPX 客户端，不在启动阶段请求 MaxKB；
+- HTTPX 客户端、基础地址和 API Key 不向路由、前端或日志暴露；
+- 不导入或修改 MaxKB 源码，不访问 MaxKB 内部数据库；
+- 健康检查不探测 MaxKB，MaxKB 不可用不会阻止非 AI 接口启动；
+- 4B03 不定义问答、生成、评价的接口路径、认证头或业务数据结构。
+
+HTTP 适配器目前不能执行真实业务调用。后续必须先确认 MaxKB 已发布应用的 API 契约，再为抽象接口、Mock 实现和 HTTP 实现同步增加业务语义方法及测试。
