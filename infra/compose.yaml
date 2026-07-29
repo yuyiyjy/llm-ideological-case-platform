@@ -1,0 +1,36 @@
+# 固定 Compose 项目名，避免不同成员的目录名称影响容器、网络和数据卷名称。
+name: llm-ideological-case-platform
+
+services:
+  postgres:
+    # 固定 PostgreSQL 主版本，同时接收该主版本后续的安全和缺陷修复更新。
+    image: postgres:17-bookworm
+    # 仅将数据库暴露到本机回环地址，避免局域网设备直接访问开发数据库。
+    ports:
+      - "127.0.0.1:5433:5432"
+    environment:
+      # 初始化参数全部来自根目录 .env，不在可提交的 Compose 文件中保存真实凭据。
+      # 问号语法会在变量缺失时立即终止，避免容器使用意外的默认账号启动。
+      POSTGRES_USER: ${POSTGRES_USER:?请在根目录 .env 中配置 POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?请在根目录 .env 中配置 POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?请在根目录 .env 中配置 POSTGRES_DB}
+    volumes:
+      # PostgreSQL 17 及更早版本应把命名卷挂载到该目录，确保重建容器后数据仍然保留。
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # 双美元符号让变量在容器内部展开，Compose 不会把凭据写入渲染后的命令。
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\"",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    # 为 PostgreSQL 的共享内存操作提供明确上限，满足本地开发的基础负载。
+    shm_size: 128mb
+
+volumes:
+  # 使用 Docker 命名卷而不是仓库目录，防止数据库文件被误提交到 Git。
+  postgres_data:

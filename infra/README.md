@@ -2,7 +2,7 @@
 
 本目录保存项目运行和交付所需的基础设施配置。
 
-## 计划内容
+## 内容范围
 
 - Dockerfile 和 Docker Compose；
 - PostgreSQL 业务数据库配置；
@@ -21,4 +21,12 @@
 
 ## 当前状态
 
-部署方案尚未实施。4B 阶段先完成配置模板和基础启动说明，容器化与 Nginx 配置将在后续任务中逐步补充。
+`compose.yaml` 已提供 4B03 本地开发所需的 PostgreSQL 17 服务：
+
+- 仅绑定本机 `127.0.0.1:5433`；
+- 使用 Docker 命名卷持久化数据；
+- 使用根目录 `.env` 提供初始化变量；
+- 提供 PostgreSQL 就绪健康检查；
+- 不包含 MaxKB，也不访问 MaxKB 内部数据库。
+
+当前 Compose 配置只服务于本地业务后端开发。后端依赖安装、数据库启动、Alembic 迁移和 FastAPI 启动命令见 `backend/README.md`。后续生产部署、Nginx 和 MaxKB 独立部署方案仍需单独设计和审查。
