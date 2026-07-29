@@ -2,7 +2,7 @@
 
 本文档说明项目环境变量的用途、当前开发阶段的建议值及安全要求。
 
-`.env.example` 是可提交到 Git 的配置模板，只保存变量名和无敏感性的示例值；`.env` 是每位成员自己的本地配置，不得提交到 Git。当前后端尚未完成初始化，因此本文档同时作为 4B02 阶段的配置约定。后续实现配置读取代码时，应以本文档和 `.env.example` 为准并同步更新。
+`.env.example` 是可提交到 Git 的配置模板，只保存变量名和无敏感性的示例值；`.env` 是每位成员自己的本地配置，不得提交到 Git。应用配置、Docker 本地数据库配置和启动说明应以本文档及 `.env.example` 为准并同步更新。
 
 ## 一、快速开始
 
@@ -12,7 +12,7 @@
 Copy-Item .env.example .env
 ```
 
-随后只修改 `.env` 中的本地真实值。至少应替换 `SECRET_KEY`；数据库和 MaxKB 相关配置可在对应服务准备完成后再填写。
+随后只修改 `.env` 中的本地真实值。至少应替换 `SECRET_KEY` 和 `POSTGRES_PASSWORD`；数据库初始化变量必须与 `DATABASE_URL` 中的用户名、密码和数据库名保持一致。MaxKB 相关配置可在对应服务准备完成后再填写。
 
 可使用以下命令生成本地随机密钥：
 
@@ -39,6 +39,7 @@ python -c "import secrets; print(secrets.token_urlsafe(48))"
 注意：
 
 - `APP_ENV=development` 和 `APP_DEBUG=true` 仅适合本地开发，测试或生产环境不得直接照搬。
+- `APP_ENV` 只允许使用 `development`、`testing` 或 `production`；`production` 环境禁止同时启用 `APP_DEBUG`。
 - `APP_HOST=0.0.0.0` 表示监听本机所有网络接口，便于容器和局域网联调；它不是浏览器访问地址。通常仍通过 `http://localhost:8000` 访问本机服务。
 - 常见日志级别包括 `DEBUG`、`INFO`、`WARNING`、`ERROR`。日常开发优先使用 `INFO`，排查问题时可临时改为 `DEBUG`。
 
@@ -46,7 +47,12 @@ python -c "import secrets; print(secrets.token_urlsafe(48))"
 
 | 变量 | 用途 | 本地开发建议 | 当前是否需要配置 | 是否敏感 |
 |---|---|---|---|---|
-| `DATABASE_URL` | FastAPI 后端连接业务 PostgreSQL 数据库所需的完整地址 | 按本机 PostgreSQL 的账号、密码、端口和数据库名填写 | PostgreSQL 启用后必填 | 是 |
+| `POSTGRES_USER` | Docker 首次初始化本地 PostgreSQL 时创建的数据库用户 | 与 `DATABASE_URL` 中的用户名保持一致 | 使用 Docker 本地数据库时必填 | 通常否 |
+| `POSTGRES_PASSWORD` | Docker 首次初始化本地 PostgreSQL 时设置的用户密码 | 使用独立的本地随机密码 | 使用 Docker 本地数据库时必填 | 是 |
+| `POSTGRES_DB` | Docker 首次初始化时创建的业务数据库名称 | `ideological_case_platform` | 使用 Docker 本地数据库时必填 | 否 |
+| `DATABASE_URL` | FastAPI 和 Alembic 连接业务 PostgreSQL 所需的完整地址 | 使用 Docker 时连接 `localhost:5433` | PostgreSQL 启用后必填 | 是 |
+
+前三个 `POSTGRES_*` 变量只由 Docker Compose 使用，不属于 FastAPI 运行时配置模型。`DATABASE_URL` 由 FastAPI、SQLAlchemy 和 Alembic 共同使用。仓库中的 Compose 配置把本机 `127.0.0.1:5433` 映射到容器内部的 `5432`，从而避免与本机已有 PostgreSQL 服务冲突。
 
 当前连接地址采用以下格式：
 
@@ -59,12 +65,34 @@ postgresql+asyncpg://用户名:密码@主机:端口/数据库名
 - 驱动：`asyncpg`；
 - 用户名：`postgres`；
 - 主机：`localhost`；
-- 端口：`5432`；
+- 端口：`5433`；
 - 数据库名：`ideological_case_platform`。
 
-模板中的密码只是示例。实际数据库密码只能写入 `.env` 或部署平台的密钥管理系统，不得写入 `.env.example`、README、截图、聊天记录或代码。
+模板中的密码只是占位值，不能直接用于本地数据库。实际数据库密码只能写入 `.env` 或部署平台的密钥管理系统，不得写入 `.env.example`、README、截图、聊天记录或代码。
 
 如果密码包含 `@`、`:`、`/`、`#` 等特殊字符，需要进行 URL 编码，否则连接地址可能被错误解析。
+
+Docker 官方 PostgreSQL 镜像只会在数据卷为空时使用 `POSTGRES_USER`、`POSTGRES_PASSWORD` 和 `POSTGRES_DB` 初始化数据库。命名卷已经初始化后，仅修改这些变量不会自动修改已有账号、密码或数据库；此时应先确认数据处理方案，不能直接删除数据卷。
+
+在项目根目录启动本地业务数据库：
+
+```powershell
+docker compose --env-file .env -f infra/compose.yaml up -d postgres
+```
+
+检查容器健康状态：
+
+```powershell
+docker compose --env-file .env -f infra/compose.yaml ps
+```
+
+停止数据库但保留容器和命名卷：
+
+```powershell
+docker compose --env-file .env -f infra/compose.yaml stop postgres
+```
+
+不得为排查问题直接执行带 `--volumes` 或 `-v` 的删除命令；删除数据库命名卷会造成不可恢复的数据丢失，必须先确认备份和影响范围。
 
 ### 2.3 跨域配置
 
@@ -82,7 +110,13 @@ http://127.0.0.1:5173
 http://localhost:3000
 ```
 
-多个来源的表示格式将在 4B03 后端配置模型实现时固定。在此之前不要自行约定逗号、JSON 数组或其他格式，以免团队成员配置不一致。生产环境不得为方便而允许任意来源。
+多个来源使用英文逗号分隔，例如：
+
+```dotenv
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+```
+
+每个来源只能包含协议、主机和端口，不能包含路径、查询参数、用户名或密码。配置加载时会规范化末尾的 `/` 并删除重复来源。生产环境不得为方便而允许任意来源。
 
 ### 2.4 认证配置
 
@@ -92,6 +126,8 @@ http://localhost:3000
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | 登录访问令牌的有效时长，单位为分钟 | `120` | 是，通常无需修改 | 否 |
 
 `SECRET_KEY` 不是 MaxKB API Key，也不是数据库密码。更换它后，使用旧密钥签发的登录令牌将无法继续通过验证。生产环境必须生成独立密钥，不能复用任何成员的本地密钥。
+
+后端启动时会拒绝 `.env.example` 中的模板占位值，并要求 `SECRET_KEY` 至少包含 32 个字符。配置校验错误不会显示该变量的原始输入值。
 
 ### 2.5 MaxKB 服务配置
 
@@ -133,7 +169,8 @@ MAXKB_MOCK_ENABLED=false
 | 配置项 | 当前处理方式 |
 |---|---|
 | 应用基础配置 | 保持 `.env.example` 的默认值 |
-| `DATABASE_URL` | PostgreSQL 已创建时填写真实本地连接地址；否则暂时保留示例，启动数据库前必须修改 |
+| `POSTGRES_USER`、`POSTGRES_PASSWORD`、`POSTGRES_DB` | 使用 Docker 本地数据库时填写，并与 `DATABASE_URL` 保持一致 |
+| `DATABASE_URL` | Docker 本地开发默认连接 `localhost:5433`；使用其他 PostgreSQL 时按实际地址填写 |
 | `CORS_ORIGINS` | 暂时保留 `http://localhost:5173`，待前端技术方案和端口确定后复核 |
 | `SECRET_KEY` | 立即替换为本机随机值 |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | 暂时保留 `120` |
@@ -150,7 +187,7 @@ MAXKB_MOCK_ENABLED=false
 4. 前端代码和前端构建变量中不得保存 `SECRET_KEY`、`MAXKB_API_KEY` 或数据库连接地址。
 5. 如果敏感值曾被提交到 Git，仅删除文件或提交记录中的文本并不等于安全；必须立即作废并重新生成该凭据。
 6. 不同环境应使用独立凭据，开发、测试和生产环境不得共用 `SECRET_KEY`、数据库密码或 MaxKB API Key。
-7. 新增、重命名或删除环境变量时，应在同一个 Pull Request 中同步修改 `.env.example`、本文档和后端配置模型。
+7. 新增、重命名或删除环境变量时，应在同一个 Pull Request 中同步修改 `.env.example` 和本文档；由 FastAPI 使用的变量还必须同步修改后端配置模型。
 
 ## 五、提交前自检
 
