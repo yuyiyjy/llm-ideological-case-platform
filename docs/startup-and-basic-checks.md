@@ -380,11 +380,13 @@ PostgreSQL 官方镜像只在命名卷为空时使用 `POSTGRES_*` 初始化账�
 
 ### 11.2 真实 MaxKB 联调
 
-当前 `infra/compose.yaml` 不部署 MaxKB，HTTP 适配器也不能执行真实业务调用。
-后续完成 MaxKB 基线部署、工作流发布和 API 契约后，需要补充：
+MaxKB 已固定为 `v2.10.3-lts` 并完成独立容器的本地基线部署、登录和版本确认，
+具体记录见 [MaxKB 稳定基线与验证记录](maxkb-baseline.md)。当前
+`infra/compose.yaml` 仍不部署 MaxKB，HTTP 适配器也不能执行真实业务调用。
+
+后续完成模型接入、工作流发布和 API 契约后，需要补充：
 
 - MaxKB 独立服务的启动与健康检查；
-- 固定版本或镜像标签；
 - 应用 ID 和 API Key 的服务端配置；
 - 后端从 Mock 模式切换到 HTTP 模式的条件；
 - 问答、生成和评价的冒烟检查；

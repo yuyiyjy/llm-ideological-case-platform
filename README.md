@@ -64,14 +64,14 @@ FastAPI 业务后端
 | 业务后端     | Python、FastAPI、Pydantic | 已确定     |
 | 数据访问     | SQLAlchemy、Alembic | 已确定     |
 | 业务数据库    | PostgreSQL | 已确定     |
-| AI 与 RAG | 独立部署的 MaxKB | 已确定     |
+| AI 与 RAG | 独立部署的 MaxKB `v2.10.3-lts` | 已确定     |
 | 前端       | 待任务 3 结合团队能力确定 | 待确认     |
 | 基础设施与部署  | Docker Compose、Nginx | 按环境逐步完善 |
 
 后端 Python 版本范围及依赖精确版本以 [backend/pyproject.toml](backend/pyproject.toml) 为准。
 MaxKB 独立部署，不要求与业务后端使用相同的 Python 或框架版本。
 
-目前关键后端技术版本：
+目前关键技术版本：
 
 | 技术 | 版本 |
 | ---- | ---- |
@@ -81,9 +81,12 @@ MaxKB 独立部署，不要求与业务后端使用相同的 Python 或框架版
 | Pytest | 9.1.1 |
 | pytest-asyncio | 1.4.0 |
 | PostgreSQL(Docker) | 17 |
+| MaxKB | v2.10.3-lts |
 
 
 完整依赖及精确版本以 [backend/pyproject.toml](backend/pyproject.toml) 为准。
+MaxKB 的源码提交、Docker 镜像摘要和验证范围见
+[MaxKB 稳定基线与使用规范](docs/maxkb-baseline.md)。
 
 ## 四、仓库结构
 
