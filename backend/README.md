@@ -40,6 +40,10 @@ Python 版本范围和直接依赖的精确版本统一声明在 `pyproject.toml
 
 ## 本地启动
 
+跨模块的统一启动顺序、基础检查清单和停止步骤见
+[启动与基础检查流程](../docs/startup-and-basic-checks.md)。本节保留后端和数据库的
+具体命令及实现边界。
+
 以下命令均在 Windows PowerShell 中执行。
 
 ### 1. 准备环境变量

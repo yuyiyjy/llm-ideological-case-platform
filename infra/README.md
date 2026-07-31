@@ -30,3 +30,5 @@
 - 不包含 MaxKB，也不访问 MaxKB 内部数据库。
 
 当前 Compose 配置只服务于本地业务后端开发。后端依赖安装、数据库启动、Alembic 迁移和 FastAPI 启动命令见 `backend/README.md`。后续生产部署、Nginx 和 MaxKB 独立部署方案仍需单独设计和审查。
+当前本地环境的完整启动顺序、基础检查和安全停止步骤见
+[`docs/startup-and-basic-checks.md`](../docs/startup-and-basic-checks.md)。
