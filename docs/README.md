@@ -34,3 +34,4 @@
 - [环境变量说明](environment-variables.md)：记录各变量的用途、本地建议值、生效阶段和安全要求。
 - [启动与基础检查流程](startup-and-basic-checks.md)：记录当前本地开发环境的启动顺序、验证清单、安全停止步骤和待补充范围。
 - [MaxKB 稳定基线与使用规范](maxkb-baseline.md)：记录固定版本、源码提交、Docker 镜像、验证结果和升级规则。
+- [4C01 模型服务接入验证记录](4C01-model-service-validation.md)：记录大语言模型、向量模型、知识库检索、多轮问答、边界测试和已确认选型。
