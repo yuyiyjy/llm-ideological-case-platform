@@ -94,3 +94,7 @@ outputs/
 exports/
 *.bak
 *.tmp
+
+# 本地工具配置与旧项目（不入库）
+.claude/
+case-system/
