@@ -1,0 +1,17 @@
+﻿案例编号,案例标题,级别,字段,说明
+case_002,嫦娥五号月球样品研究成果,WARN,result,result 建议一句话（当前 124 字）
+case_003,C919大型客机成功首飞并商业运营,WARN,keywords,建议 3–6 个（当前 7 个，以 DeepSeek 输出上限为准）
+case_004,“奋斗者”号坐底马里亚纳海沟10909米，刷新中国载人深潜纪录,WARN,keywords,建议 3–6 个（当前 8 个，以 DeepSeek 输出上限为准）
+case_005,国家天文台举办FAST首批成果新闻发布会,WARN,keywords,建议 3–6 个（当前 7 个，以 DeepSeek 输出上限为准）
+case_006,“华龙一号”全球首堆福清核电5号机组商运,WARN,keywords,建议 3–6 个（当前 7 个，以 DeepSeek 输出上限为准）
+case_007,云南华坪县女子高中校长张桂梅让教育之光照亮贫困山区,WARN,result,result 建议一句话（当前 127 字）
+case_008,王贻芳和大亚湾中微子实验团队获2016年基础物理学突破奖,WARN,keywords,建议 3–6 个（当前 7 个，以 DeepSeek 输出上限为准）
+case_009,DeepSeek-V3开源大模型的自主研发与高效训练,WARN,keywords,建议 3–6 个（当前 8 个，以 DeepSeek 输出上限为准）
+case_009,DeepSeek-V3开源大模型的自主研发与高效训练,WARN,result,result 建议一句话（当前 129 字）
+case_011,“鹏城云脑”超大规模国产智能算力系统及产业化工程获国家科学技术进步奖一等奖,WARN,keywords,建议 3–6 个（当前 7 个，以 DeepSeek 输出上限为准）
+case_012,潍坊学院：“行走的思政课”实现科技实践与育人深度融合,WARN,result,result 建议一句话（当前 158 字）
+case_016,浙江“金种子”计划助力脉流科技荣获WIPO全球奖,WARN,keywords,建议 3–6 个（当前 7 个，以 DeepSeek 输出上限为准）
+case_016,浙江“金种子”计划助力脉流科技荣获WIPO全球奖,ERROR,process,案例类数据必填，当前为空
+case_016,浙江“金种子”计划助力脉流科技荣获WIPO全球奖,WARN,result,result 建议一句话（当前 276 字）
+case_017,“六边形”舰船隐身复合材料构件实现结构功能一体化重大突破,WARN,keywords,建议 3–6 个（当前 7 个，以 DeepSeek 输出上限为准）
+case_019,中国超算重回世界第一，意味着什么,WARN,keywords,建议 3–6 个（当前 8 个，以 DeepSeek 输出上限为准）
